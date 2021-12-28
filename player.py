@@ -1,5 +1,5 @@
 import pygame
-
+import math
 
 class Player(pygame.sprite.Sprite):
 
@@ -13,9 +13,11 @@ class Player(pygame.sprite.Sprite):
         self.start_health = 100
         self.health = self.start_health
         self.max_health = self.start_health
-
-        self.image = pygame.image.load('graphics/player.png')
+        self.orig_image = pygame.image.load('graphics/player.png')
+        self.image = self.orig_image
         self.rect = self.image.get_rect()
+        self.degree = 0
+        self.center = [self.screen_width / 2, self.screen_height / 2]
 
 
     def update(self, keys):
@@ -31,6 +33,12 @@ class Player(pygame.sprite.Sprite):
         if keys[pygame.K_s] and self.rect.bottom < self.screen_height:
             self.rect.y += self.speed / self.fps
 
+        mouse_pos = pygame.mouse.get_pos()
+        x, y = mouse_pos[0] - self.center[0], mouse_pos[1] - self.center[1]
+        angle = math.degrees(-math.atan2(y, x))
+        self.image = pygame.transform.rotate(self.orig_image, angle % 360)
+        self.rect = self.image.get_rect()
+        self.rect.center = self.center
 
     def spawn(self, arena_width, arena_height):
         self.rect.x = arena_width / 2
